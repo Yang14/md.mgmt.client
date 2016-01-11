@@ -1,6 +1,7 @@
 package md.mgmt.network.connect;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
@@ -14,11 +15,11 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 /**
  * Created by Mr-yang on 16-1-9.
  */
-public class MdClient {
-    static final String HOST = System.getProperty("host", "127.0.0.1");
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8007"));
+public class IndexClient {
+    private static final String HOST = System.getProperty("host", "127.0.0.1");
+    private static final int PORT = Integer.parseInt(System.getProperty("port", "8007"));
 
-    public void connectToServer() throws Exception {
+    public void connectAndHandle(final ChannelInboundHandlerAdapter handlerAdapter) throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
@@ -31,7 +32,7 @@ public class MdClient {
                             p.addLast(
                                     new ObjectEncoder(),
                                     new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                                    new MdClientHandler());
+                                    handlerAdapter);
                         }
                     });
             b.connect(HOST, PORT).sync().channel().closeFuture().sync();

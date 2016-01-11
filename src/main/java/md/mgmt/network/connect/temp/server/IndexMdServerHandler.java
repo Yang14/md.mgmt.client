@@ -13,27 +13,41 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package md.mgmt.network.connect;
+package md.mgmt.network.connect.temp.server;
 
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import md.mgmt.base.ops.RespDto;
+import md.mgmt.base.md.ClusterNodeInfo;
+import md.mgmt.base.md.ExactCode;
+import md.mgmt.network.recv.create.index.MdAttrPos;
+import md.mgmt.network.recv.create.index.MdAttrPosDto;
 
 /**
  * Handles both client-side and server-side handler depending on which
  * constructor was called.
  */
-public class MdServerHandler extends ChannelInboundHandlerAdapter {
+public class IndexMdServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         System.out.println("s.channelRead:" + msg);
-        RespDto respDto = new RespDto();
-        respDto.setSuccess(true);
-        respDto.setMsg("创建成功");
-        respDto.setObj(new String("uuu"));
-        ctx.writeAndFlush(JSON.toJSONString(respDto));
+        MdAttrPosDto mdAttrPosDto = new MdAttrPosDto();
+        mdAttrPosDto.setSuccess(true);
+        mdAttrPosDto.setMsg("元数据索引创建成功");
+        ClusterNodeInfo clusterNodeInfo = new ClusterNodeInfo();
+        clusterNodeInfo.setIp("127.0.0.1");
+        clusterNodeInfo.setPort(8008);
+        clusterNodeInfo.setDistrCode("77777");
+        ExactCode exactCode = new ExactCode();
+        exactCode.setDistrCode("77777");
+        exactCode.setFileCode("11111");
+        MdAttrPos mdAttrPos = new MdAttrPos();
+        mdAttrPos.setClusterNodeInfo(clusterNodeInfo);
+        mdAttrPos.setExactCode(exactCode);
+        mdAttrPosDto.setMdAttrPos(mdAttrPos);
+
+        ctx.writeAndFlush(JSON.toJSONString(mdAttrPosDto));
     }
 
     @Override

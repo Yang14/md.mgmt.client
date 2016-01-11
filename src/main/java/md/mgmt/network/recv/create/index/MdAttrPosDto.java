@@ -31,4 +31,14 @@ public class MdAttrPosDto {
     public void setMdAttrPos(MdAttrPos mdAttrPos) {
         this.mdAttrPos = mdAttrPos;
     }
+
+
+    @Override
+    public String toString() {
+        return "MdAttrPosDto{" +
+                "success=" + success +
+                ", msg='" + msg + '\'' +
+                ", mdAttrPos=" + mdAttrPos +
+                '}';
+    }
 }

@@ -27,4 +27,11 @@ public class MdAttrPos {
         this.clusterNodeInfo = clusterNodeInfo;
     }
 
+    @Override
+    public String toString() {
+        return "MdAttrPos{" +
+                "exactCode=" + exactCode +
+                ", clusterNodeInfo=" + clusterNodeInfo +
+                '}';
+    }
 }

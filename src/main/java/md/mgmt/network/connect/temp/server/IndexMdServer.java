@@ -1,4 +1,4 @@
-package md.mgmt.network.connect;
+package md.mgmt.network.connect.temp.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -16,7 +16,7 @@ import io.netty.handler.logging.LoggingHandler;
 /**
  * Created by Mr-yang on 16-1-9.
  */
-public class MdServer {
+public class IndexMdServer {
 
     static final int PORT = Integer.parseInt(System.getProperty("port", "8007"));
 
@@ -35,7 +35,7 @@ public class MdServer {
                             p.addLast(
                                     new ObjectEncoder(),
                                     new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                                    new MdServerHandler());
+                                    new IndexMdServerHandler());
                         }
                     });
 
