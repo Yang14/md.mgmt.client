@@ -11,15 +11,21 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Mr-yang on 16-1-9.
  */
+@Component
 public class IndexClient {
-    private static final String HOST = System.getProperty("host", "127.0.0.1");
+    private static final Logger logger = LoggerFactory.getLogger(IndexClient.class);
+
+    private static final String HOST = System.getProperty("host", "192.168.0.13");
     private static final int PORT = Integer.parseInt(System.getProperty("port", "8007"));
 
-    public void connectAndHandle(final ChannelInboundHandlerAdapter handlerAdapter) throws Exception {
+    public void connectAndHandle(final ChannelInboundHandlerAdapter handlerAdapter) {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
@@ -36,6 +42,8 @@ public class IndexClient {
                         }
                     });
             b.connect(HOST, PORT).sync().channel().closeFuture().sync();
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage());
         } finally {
             group.shutdownGracefully();
         }

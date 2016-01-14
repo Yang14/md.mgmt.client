@@ -1,11 +1,12 @@
 package md.mgmt.network.impl;
 
+import md.mgmt.base.constant.OpsTypeEnum;
 import md.mgmt.facade.req.Md;
 import md.mgmt.facade.resp.CreateMdResp;
 import md.mgmt.network.CreateMdDao;
 import md.mgmt.network.connect.BackendClient;
 import md.mgmt.network.connect.IndexClient;
-import md.mgmt.network.connect.create.CreateFileMdIndexHandler;
+import md.mgmt.network.connect.create.CreateMdIndexHandler;
 import md.mgmt.network.recv.create.index.MdAttrPos;
 import md.mgmt.network.recv.create.index.MdAttrPosDto;
 import md.mgmt.base.md.MdAttr;
@@ -32,7 +33,8 @@ public class CreateMdDaoImpl implements CreateMdDao {
     public MdAttrPosDto createFileMdIndex(MdIndex mdIndex) {
         MdAttrPosDto mdAttrPosDto = new MdAttrPosDto();
         try {
-            indexClient.connectAndHandle(new CreateFileMdIndexHandler(mdIndex, mdAttrPosDto));
+            indexClient.connectAndHandle(
+                    new CreateMdIndexHandler(mdIndex, mdAttrPosDto, OpsTypeEnum.CREATE_FILE.getCode()));
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -41,7 +43,14 @@ public class CreateMdDaoImpl implements CreateMdDao {
 
     @Override
     public MdAttrPosDto createDirMdIndex(MdIndex mdIndex) {
-        return null;
+        MdAttrPosDto mdAttrPosDto = new MdAttrPosDto();
+        try {
+            indexClient.connectAndHandle(
+                    new CreateMdIndexHandler(mdIndex, mdAttrPosDto, OpsTypeEnum.CREATE_DIR.getCode()));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        return mdAttrPosDto;
     }
 
     @Override
@@ -51,9 +60,9 @@ public class CreateMdDaoImpl implements CreateMdDao {
         createMdResp.setMsg("创建文件元数据失败");
         String ip = mdAttrPos.getClusterNodeInfo().getIp();
         int port = mdAttrPos.getClusterNodeInfo().getPort();
-        BackendClient backendClient = new BackendClient(ip,port);
+        BackendClient backendClient = new BackendClient(ip, port);
         CreateMdAttrHandler createMdAttrHandler =
-                new CreateMdAttrHandler(mdAttr,mdAttrPos.getExactCode(),createMdResp);
+                new CreateMdAttrHandler(mdAttr, mdAttrPos.getExactCode(), createMdResp);
         try {
             backendClient.connectAndHandle(createMdAttrHandler);
         } catch (Exception e) {

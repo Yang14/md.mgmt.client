@@ -3,15 +3,14 @@ package md.mgmt.facade;
 import md.mgmt.base.md.MdAttr;
 import md.mgmt.base.md.MdIndex;
 import md.mgmt.facade.req.Md;
-import md.mgmt.facade.resp.CreateMdResp;
-import md.mgmt.network.recv.create.index.MdAttrPosDto;
 import md.mgmt.service.CreateMdService;
+import md.mgmt.service.FindMdService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -22,6 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:spring.xml")
 public class ClientFacadeTest {
+    private static final Logger logger = LoggerFactory.getLogger(ClientFacadeTest.class);
 
     @Autowired
     private ClientFacade clientFacade;
@@ -30,47 +30,55 @@ public class ClientFacadeTest {
     @Autowired
     private CreateMdService createMdService;
 
-//    @Mock
+    @Autowired
+    private FindMdService findMdService;
+
+    //    @Mock
 //    private CreateMdDao createMdDao;
+    private Md md = new Md();
+    private MdIndex mdIndex = new MdIndex();
+    private MdAttr mdAttr = new MdAttr();
 
     @Before
     public void initMocks() {
-        MockitoAnnotations.initMocks(this);
+        mdIndex.setPath("/bin");
+        mdIndex.setName("foo.txt");
+
+        mdAttr.setName("foo.txt");
+        mdAttr.setAcl((short) 777);
     }
 
     @Test
     public void testCreateFileMd() {
-        MdIndex mdIndex = new MdIndex();
+        md.setMdAttr(mdAttr);
+        md.setMdIndex(mdIndex);
+        System.out.println(clientFacade.createFileMd(md));
+        /*int count = 10;
+        System.out.println("\n\n\n" + String.valueOf(System.currentTimeMillis()));
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < count; i++) {
+            System.out.println(clientFacade.createFileMd(md));
+        }
+        long end = System.currentTimeMillis();
+        System.out.println(String.valueOf(System.currentTimeMillis()));
+        System.out.println(
+                String.format("\nCreate %s dir use Total time: %s ms\navg time: %sms\n\n\n",
+                        count, (end - start), (end - start) / (count * 1.0)));*/
+    }
+
+    @Test
+    public void testCreteDirMd() {
         mdIndex.setPath("/bin");
-        mdIndex.setName("foo.txt");
-        MdAttr mdAttr = new MdAttr();
-        mdAttr.setName("foo.txt");
-        mdAttr.setAcl((short) 777);
-        Md md = new Md();
+        mdIndex.setName("yang");
         md.setMdIndex(mdIndex);
         md.setMdAttr(mdAttr);
-
-        MdAttrPosDto mdAttrPosDto = new MdAttrPosDto();
-        mdAttrPosDto.setSuccess(true);
-        mdAttrPosDto.setMsg("get md pos ok.");
-
-        CreateMdResp createMdResp = new CreateMdResp();
-        createMdResp.setSuccess(true);
-        createMdResp.setMsg(mdAttrPosDto.getMsg());
-
-//        when(createMdService.createFileMd(argThat(new MdArgument()))).thenReturn(createMdResp);
-//        when(createMdDao.createFileMdIndex(md.getMdIndex())).thenReturn(mdAttrPosDto);
-//        when(createMdDao.createMdAttr(mdAttrPosDto.getMdAttrPos(),md.getMdAttr())).thenReturn(createMdResp);
-        System.out.println(clientFacade.createFileMd(md));
-       // verify(createMdService).createFileMd(argThat(new MdArgument()));
+        logger.info(createMdService.createDirMd(md).toString());
     }
 
-    class MdArgument extends ArgumentMatcher<Md> {
-
-        @Override
-        public boolean matches(Object o) {
-            return o.getClass() == Md.class;
-        }
+    @Test
+    public void testFindFileMd() {
+        mdIndex.setPath("/bin");
+        mdIndex.setName("foo.txt");
+        logger.info(findMdService.findFileMd(mdIndex).toString());
     }
-
 }

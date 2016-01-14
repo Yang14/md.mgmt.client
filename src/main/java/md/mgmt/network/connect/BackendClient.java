@@ -11,11 +11,15 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Mr-yang on 16-1-9.
  */
 public class BackendClient {
+    private static final Logger logger = LoggerFactory.getLogger(BackendClient.class);
+
     private String HOST;
     private int PORT;
 
@@ -24,7 +28,7 @@ public class BackendClient {
         this.PORT = PORT;
     }
 
-    public void connectAndHandle(final ChannelInboundHandlerAdapter handlerAdapter) throws Exception {
+    public void connectAndHandle(final ChannelInboundHandlerAdapter handlerAdapter) {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
@@ -41,6 +45,8 @@ public class BackendClient {
                         }
                     });
             b.connect(HOST, PORT).sync().channel().closeFuture().sync();
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage());
         } finally {
             group.shutdownGracefully();
         }
