@@ -2,10 +2,13 @@ package md.mgmt.facade;
 
 import md.mgmt.base.md.MdAttr;
 import md.mgmt.base.md.MdIndex;
+import md.mgmt.base.ops.RenamedMd;
 import md.mgmt.facade.req.Md;
 import md.mgmt.facade.resp.FindDirMdResp;
+import md.mgmt.facade.resp.RenameMdResp;
 import md.mgmt.service.CreateMdService;
 import md.mgmt.service.FindMdService;
+import md.mgmt.service.RenameMdService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +39,9 @@ public class ClientFacadeTest {
     @Autowired
     private FindMdService findMdService;
 
-    //    @Mock
-//    private CreateMdDao createMdDao;
+    @Autowired
+    private RenameMdService renameMdService;
+
     private Md md = new Md();
     private MdIndex mdIndex = new MdIndex();
     private MdAttr mdAttr = new MdAttr();
@@ -77,11 +81,8 @@ public class ClientFacadeTest {
     @Test
     public void testListDirMd() {
         mdIndex.setPath("/");
-        mdIndex.setName("bin2");
-        FindDirMdResp findDirMdResp = findMdService.findDirMd(mdIndex);
-        mdIndex.setName("");
-        findDirMdResp = findMdService.findDirMd(mdIndex);
-        printDirList(findDirMdResp);
+        mdIndex.setName("bin0");
+        printDirList(findMdService.findDirMd(mdIndex));
     }
 
     private Md getMd(String path, String name, int size) {
@@ -137,7 +138,20 @@ public class ClientFacadeTest {
         logger.info(findMdService.findFileMd(mdIndex).toString());
     }
 
+    @Test
+    public void testRenameMd() {
+        testListDirMd();
+        RenamedMd renamedMd = new RenamedMd("/bin0", "a.t0", "a.t0---0");
+        RenameMdResp renameMdResp = renameMdService.renameMd(renamedMd);
+        logger.info(renameMdResp.toString());
+        testListDirMd();
+    }
 
+    private void listDir(String path,String name){
+        mdIndex.setPath("/");
+        mdIndex.setName("");
+        printDirList(findMdService.findDirMd(mdIndex));
+    }
 
     private void printDirList(FindDirMdResp findDirMdResp) {
         List<MdAttr> mdAttrs = findDirMdResp.getMdAttrs();
