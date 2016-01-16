@@ -17,7 +17,7 @@ public interface FindMdDao {
 
     public RespDto findFileMdAttr(FileMdAttrPosList fileMdAttrPosList);
 
-    public DirMdAttrPosList findDirMdIndex(MdIndex mdIndex);
+    public RespDto findDirMdIndex(MdIndex mdIndex);
 
     public List<MdAttr> findDirMdAttr(DirMdAttrPosList dirMdAttrPosList);
 }

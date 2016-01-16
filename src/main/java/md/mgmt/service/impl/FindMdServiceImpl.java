@@ -7,6 +7,7 @@ import md.mgmt.base.ops.RespDto;
 import md.mgmt.facade.resp.FindDirMdResp;
 import md.mgmt.facade.resp.FindFileMdResp;
 import md.mgmt.network.FindMdDao;
+import md.mgmt.network.recv.find.DirMdAttrPosList;
 import md.mgmt.network.recv.find.FileMdAttrPosList;
 import md.mgmt.service.FindMdService;
 import org.slf4j.Logger;
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Created by Mr-yang on 16-1-14.
@@ -48,6 +51,22 @@ public class FindMdServiceImpl implements FindMdService {
 
     @Override
     public FindDirMdResp findDirMd(MdIndex mdIndex) {
-        return null;
+        RespDto respDto = findMdDao.findDirMdIndex(mdIndex);
+        if (respDto == null || !respDto.getSuccess()) {
+            logger.error("findFileMd error, params: " + mdIndex);
+            return null;
+        }
+        DirMdAttrPosList dirMdAttrPosList =
+                JSON.parseObject(respDto.getObjStr(), DirMdAttrPosList.class);
+        if (dirMdAttrPosList == null){
+            logger.error("fileMdAttrPosList is null.params:" + mdIndex);
+            return null;
+        }
+        FindDirMdResp findDirMdResp = new FindDirMdResp();
+        List<MdAttr> mdAttrs = findMdDao.findDirMdAttr(dirMdAttrPosList);
+        findDirMdResp.setMdAttrs(mdAttrs);
+        findDirMdResp.setSuccess(true);
+        findDirMdResp.setMsg("列表目录成功");
+        return findDirMdResp;
     }
 }

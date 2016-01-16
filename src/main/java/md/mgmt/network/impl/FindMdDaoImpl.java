@@ -1,5 +1,7 @@
 package md.mgmt.network.impl;
 
+import com.alibaba.fastjson.JSON;
+import md.mgmt.base.constant.OpsTypeEnum;
 import md.mgmt.base.md.ClusterNodeInfo;
 import md.mgmt.base.md.MdAttr;
 import md.mgmt.base.md.MdIndex;
@@ -7,14 +9,17 @@ import md.mgmt.base.ops.RespDto;
 import md.mgmt.network.FindMdDao;
 import md.mgmt.network.connect.BackendClient;
 import md.mgmt.network.connect.IndexClient;
-import md.mgmt.network.connect.find.FindMdAttrHandler;
+import md.mgmt.network.connect.find.FindDirMdAttrHandler;
+import md.mgmt.network.connect.find.FindFileMdAttrHandler;
 import md.mgmt.network.connect.find.FindMdIndexHandler;
 import md.mgmt.network.recv.find.DirMdAttrPosList;
 import md.mgmt.network.recv.find.FileMdAttrPosList;
+import md.mgmt.network.recv.find.MdAttrListDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +33,7 @@ public class FindMdDaoImpl implements FindMdDao {
     @Override
     public RespDto findFileMdIndex(MdIndex mdIndex) {
         RespDto respDto = new RespDto();
-        indexClient.connectAndHandle(new FindMdIndexHandler(mdIndex, respDto));
+        indexClient.connectAndHandle(new FindMdIndexHandler(mdIndex, respDto, OpsTypeEnum.FIND_FILE.getCode()));
         return respDto;
     }
 
@@ -37,10 +42,10 @@ public class FindMdDaoImpl implements FindMdDao {
         List<ClusterNodeInfo> clusterNodeInfos = fileMdAttrPosList.getClusterNodeInfos();
         RespDto respDto = new RespDto();
         String fileCode = fileMdAttrPosList.getFileCode();
-        for (ClusterNodeInfo nodeInfo : clusterNodeInfos){
-            BackendClient client = new BackendClient(nodeInfo.getIp(),nodeInfo.getPort());
-            client.connectAndHandle(new FindMdAttrHandler(fileCode,respDto));
-            if (respDto.getSuccess()){
+        for (ClusterNodeInfo nodeInfo : clusterNodeInfos) {
+            BackendClient client = new BackendClient(nodeInfo.getIp(), nodeInfo.getPort());
+            client.connectAndHandle(new FindFileMdAttrHandler(fileCode, respDto));
+            if (respDto.getSuccess()) {
                 break;
             }
         }
@@ -48,12 +53,28 @@ public class FindMdDaoImpl implements FindMdDao {
     }
 
     @Override
-    public DirMdAttrPosList findDirMdIndex(MdIndex mdIndex) {
-        return null;
+    public RespDto findDirMdIndex(MdIndex mdIndex) {
+        RespDto respDto = new RespDto();
+        indexClient.connectAndHandle(new FindMdIndexHandler(mdIndex, respDto, OpsTypeEnum.LIST_DIR.getCode()));
+        return respDto;
     }
 
     @Override
     public List<MdAttr> findDirMdAttr(DirMdAttrPosList dirMdAttrPosList) {
-        return null;
+        List<ClusterNodeInfo> clusterNodeInfos = dirMdAttrPosList.getClusterNodeInfos();
+        RespDto respDto = new RespDto();
+        List<MdAttr> mdAttrs = new ArrayList<MdAttr>();
+        for (ClusterNodeInfo nodeInfo : clusterNodeInfos) {
+            BackendClient client = new BackendClient(nodeInfo.getIp(), nodeInfo.getPort());
+            client.connectAndHandle(new FindDirMdAttrHandler(nodeInfo.getDistrCode(), respDto));
+            if (!respDto.getSuccess()) {
+                logger.error(String.format("Get mdAttr from Node: %s err. resp is:%s", nodeInfo, respDto));
+            }
+            MdAttrListDto partMdAttrs = JSON.parseObject(respDto.getObjStr(), MdAttrListDto.class);
+            for (MdAttr mdAttr : partMdAttrs.getMdAttrList()) {
+                mdAttrs.add(mdAttr);
+            }
+        }
+        return mdAttrs;
     }
 }

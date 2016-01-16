@@ -11,12 +11,12 @@ import org.springframework.beans.BeanUtils;
 /**
  * Created by Mr-yang on 16-1-9.
  */
-public class FindMdAttrHandler extends ChannelInboundHandlerAdapter {
+public class FindFileMdAttrHandler extends ChannelInboundHandlerAdapter {
 
     private String fileCode;
     private RespDto respDto;
 
-    public FindMdAttrHandler(String fileCode, RespDto respDto) {
+    public FindFileMdAttrHandler(String fileCode, RespDto respDto) {
         this.fileCode = fileCode;
         this.respDto = respDto;
     }
@@ -25,7 +25,7 @@ public class FindMdAttrHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
         ReqDto reqDto = new ReqDto();
         reqDto.setOpsType(OpsTypeEnum.FIND_FILE.getCode());
-        reqDto.setOpsContent(fileCode); 
+        reqDto.setOpsContent(fileCode);
         ctx.writeAndFlush(JSON.toJSONString(reqDto));
     }
 

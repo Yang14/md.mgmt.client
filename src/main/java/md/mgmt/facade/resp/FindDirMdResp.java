@@ -2,7 +2,7 @@ package md.mgmt.facade.resp;
 
 import md.mgmt.base.md.MdAttr;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Mr-yang on 16-1-9.
@@ -11,7 +11,7 @@ public class FindDirMdResp {
 
     private Boolean success;
     private String msg;
-    private ArrayList<MdAttr> mdAttrs;
+    private List<MdAttr> mdAttrs;
 
     public Boolean getSuccess() {
         return success;
@@ -29,11 +29,11 @@ public class FindDirMdResp {
         this.msg = msg;
     }
 
-    public ArrayList<MdAttr> getMdAttrs() {
+    public List<MdAttr> getMdAttrs() {
         return mdAttrs;
     }
 
-    public void setMdAttrs(ArrayList<MdAttr> mdAttrs) {
+    public void setMdAttrs(List<MdAttr> mdAttrs) {
         this.mdAttrs = mdAttrs;
     }
 
