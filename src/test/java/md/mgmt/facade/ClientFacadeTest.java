@@ -42,13 +42,14 @@ public class ClientFacadeTest {
     @Autowired
     private RenameMdService renameMdService;
 
-    private Md md = new Md();
     private MdIndex mdIndex = new MdIndex();
     private MdAttr mdAttr = new MdAttr();
+    private Md md = null;
 
     @Before
     public void initMocks() {
         mdAttr.setAcl((short) 777);
+        md = new Md(mdIndex,mdAttr);
     }
 
     @Test
@@ -56,7 +57,7 @@ public class ClientFacadeTest {
         long start = System.currentTimeMillis();
         String secondDir = "bin";
         for (int i = 0; i < 5; i++) {
-            createMdService.createDirMd(getMd("/", secondDir + i, i));
+            createMdService.createDirMd(getMd("/", secondDir + i, i,true));
 
         }
 
@@ -68,8 +69,8 @@ public class ClientFacadeTest {
         String thirdFile = "a.t";
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 5; j++) {
-                createMdService.createDirMd(getMd("/" + secondDir + i, thirdDir + j + ":" + i, j));
-                createMdService.createFileMd(getMd("/" + secondDir + i, thirdFile + j, j * 5));
+                createMdService.createDirMd(getMd("/" + secondDir + i, thirdDir + j + ":" + i, j,true));
+                createMdService.createFileMd(getMd("/" + secondDir + i, thirdFile + j, j * 5,false));
             }
         }
         long end2 = System.currentTimeMillis();
@@ -79,17 +80,33 @@ public class ClientFacadeTest {
     }
 
     @Test
+    public void buildBigDir() {
+        int count = 1000;
+        logger.info("\n\n\n" + String.valueOf(System.currentTimeMillis()));
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < count; i++) {
+            createMdService.createFileMd(getMd("/home/a/b","b-file"+i,i,false));
+        }
+        long end = System.currentTimeMillis();
+        logger.info(String.valueOf(System.currentTimeMillis()));
+        logger.info(
+                String.format("\nbuildBigDir %s count use Total time: %s ms\navg time: %sms\n\n\n",
+                        count, (end - start), (end - start) / (count * 1.0)));
+    }
+
+    @Test
     public void testListDirMd() {
-        mdIndex.setPath("/");
-        mdIndex.setName("bin0");
+        mdIndex.setPath("/home/a");
+        mdIndex.setName("b");
         printDirList(findMdService.findDirMd(mdIndex));
     }
 
-    private Md getMd(String path, String name, int size) {
+    private Md getMd(String path, String name, int size,boolean isDir) {
         mdIndex.setPath(path);
         mdIndex.setName(name);
         mdAttr.setName(name);
         mdAttr.setSize(size);
+        mdAttr.setType(isDir);
         md.setMdAttr(mdAttr);
         md.setMdIndex(mdIndex);
         return md;

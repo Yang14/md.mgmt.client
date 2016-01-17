@@ -12,6 +12,14 @@ public class Md {
 
     private MdAttr mdAttr;
 
+    public Md() {
+    }
+
+    public Md(MdIndex mdIndex, MdAttr mdAttr) {
+        this.mdIndex = mdIndex;
+        this.mdAttr = mdAttr;
+    }
+
     public MdIndex getMdIndex() {
         return mdIndex;
     }
