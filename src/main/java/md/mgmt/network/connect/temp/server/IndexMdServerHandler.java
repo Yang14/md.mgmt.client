@@ -38,9 +38,9 @@ public class IndexMdServerHandler extends ChannelInboundHandlerAdapter {
         ClusterNodeInfo clusterNodeInfo = new ClusterNodeInfo();
         clusterNodeInfo.setIp("127.0.0.1");
         clusterNodeInfo.setPort(8008);
-        clusterNodeInfo.setDistrCode("77777");
+        clusterNodeInfo.setDistrCode(Long.valueOf(7777));
         ExactCode exactCode = new ExactCode();
-        exactCode.setDistrCode("77777");
+        exactCode.setDistrCode(Long.valueOf(77777));
         exactCode.setFileCode("11111");
         MdAttrPos mdAttrPos = new MdAttrPos();
         mdAttrPos.setClusterNodeInfo(clusterNodeInfo);

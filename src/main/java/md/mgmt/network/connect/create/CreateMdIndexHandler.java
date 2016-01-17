@@ -8,12 +8,15 @@ import md.mgmt.base.ops.ReqDto;
 import md.mgmt.base.ops.RespDto;
 import md.mgmt.network.recv.create.index.MdAttrPos;
 import md.mgmt.network.recv.create.index.MdAttrPosDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 /**
  * Created by Mr-yang on 16-1-9.
  */
 public class CreateMdIndexHandler extends ChannelInboundHandlerAdapter {
+    private static final Logger logger = LoggerFactory.getLogger(CreateMdIndexHandler.class);
 
     private MdIndex mdIndex;
     private MdAttrPosDto mdAttrPosDto;
@@ -30,7 +33,9 @@ public class CreateMdIndexHandler extends ChannelInboundHandlerAdapter {
         ReqDto reqDto = new ReqDto();
         reqDto.setOpsType(opsType);
         reqDto.setOpsContent(JSON.toJSONString(mdIndex));
-        ctx.writeAndFlush(JSON.toJSONString(reqDto));
+        String sendStr = JSON.toJSONString(reqDto);
+        logger.info(sendStr);
+        ctx.writeAndFlush(sendStr);
     }
 
     @Override

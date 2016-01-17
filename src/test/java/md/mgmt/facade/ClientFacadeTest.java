@@ -49,7 +49,7 @@ public class ClientFacadeTest {
     @Before
     public void initMocks() {
         mdAttr.setAcl((short) 777);
-        md = new Md(mdIndex,mdAttr);
+        md = new Md(mdIndex, mdAttr);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ClientFacadeTest {
         long start = System.currentTimeMillis();
         String secondDir = "bin";
         for (int i = 0; i < 5; i++) {
-            createMdService.createDirMd(getMd("/", secondDir + i, i,true));
+            createMdService.createDirMd(getMd("/", secondDir + i, i, true));
 
         }
 
@@ -69,8 +69,8 @@ public class ClientFacadeTest {
         String thirdFile = "a.t";
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 5; j++) {
-                createMdService.createDirMd(getMd("/" + secondDir + i, thirdDir + j + ":" + i, j,true));
-                createMdService.createFileMd(getMd("/" + secondDir + i, thirdFile + j, j * 5,false));
+                createMdService.createDirMd(getMd("/" + secondDir + i, thirdDir + j + ":" + i, j, true));
+                createMdService.createFileMd(getMd("/" + secondDir + i, thirdFile + j, j * 5, false));
             }
         }
         long end2 = System.currentTimeMillis();
@@ -85,7 +85,7 @@ public class ClientFacadeTest {
         logger.info("\n\n\n" + String.valueOf(System.currentTimeMillis()));
         long start = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
-            createMdService.createFileMd(getMd("/home/a/b","b-file"+i,i,false));
+            createMdService.createFileMd(getMd("/home/a", "a-file" + i, i, false));
         }
         long end = System.currentTimeMillis();
         logger.info(String.valueOf(System.currentTimeMillis()));
@@ -96,12 +96,12 @@ public class ClientFacadeTest {
 
     @Test
     public void testListDirMd() {
-        mdIndex.setPath("/home/a");
-        mdIndex.setName("b");
+        mdIndex.setPath("/home");
+        mdIndex.setName("a");
         printDirList(findMdService.findDirMd(mdIndex));
     }
 
-    private Md getMd(String path, String name, int size,boolean isDir) {
+    private Md getMd(String path, String name, int size, boolean isDir) {
         mdIndex.setPath(path);
         mdIndex.setName(name);
         mdAttr.setName(name);
@@ -109,34 +109,13 @@ public class ClientFacadeTest {
         mdAttr.setType(isDir);
         md.setMdAttr(mdAttr);
         md.setMdIndex(mdIndex);
+        logger.info(md.toString());
         return md;
     }
 
     @Test
     public void testCreateFileMd() {
-        mdIndex.setPath("/bin/yang");
-        mdIndex.setName("f1");
-        mdAttr.setName("f1");
-        md.setMdAttr(mdAttr);
-        md.setMdIndex(mdIndex);
-        System.out.println(clientFacade.createFileMd(md));
-        mdIndex.setPath("/bin/yang");
-        mdIndex.setName("f2");
-        mdAttr.setName("f2");
-        md.setMdAttr(mdAttr);
-        md.setMdIndex(mdIndex);
-        System.out.println(clientFacade.createFileMd(md));
-        /*int count = 10;
-        System.out.println("\n\n\n" + String.valueOf(System.currentTimeMillis()));
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < count; i++) {
-            System.out.println(clientFacade.createFileMd(md));
-        }
-        long end = System.currentTimeMillis();
-        System.out.println(String.valueOf(System.currentTimeMillis()));
-        System.out.println(
-                String.format("\nCreate %s dir use Total time: %s ms\navg time: %sms\n\n\n",
-                        count, (end - start), (end - start) / (count * 1.0)));*/
+        createMdService.createFileMd(getMd("/home/a", "a-file" + 84, 84, false));
     }
 
     @Test
@@ -164,7 +143,7 @@ public class ClientFacadeTest {
         testListDirMd();
     }
 
-    private void listDir(String path,String name){
+    private void listDir(String path, String name) {
         mdIndex.setPath("/");
         mdIndex.setName("");
         printDirList(findMdService.findDirMd(mdIndex));
