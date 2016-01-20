@@ -96,8 +96,8 @@ public class ClientFacadeTest {
 
     @Test
     public void testListDirMd() {
-        mdIndex.setPath("/home");
-        mdIndex.setName("a");
+        mdIndex.setPath("/");
+        mdIndex.setName("bin0");
         printDirList(findMdService.findDirMd(mdIndex));
     }
 
