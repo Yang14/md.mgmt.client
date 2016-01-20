@@ -6,6 +6,7 @@ import md.mgmt.base.ops.RenamedMd;
 import md.mgmt.facade.req.Md;
 import md.mgmt.facade.resp.FindDirMdResp;
 import md.mgmt.facade.resp.RenameMdResp;
+import md.mgmt.network.MdRedisDao;
 import md.mgmt.service.CreateMdService;
 import md.mgmt.service.FindMdService;
 import md.mgmt.service.RenameMdService;
@@ -42,6 +43,9 @@ public class ClientFacadeTest {
     @Autowired
     private RenameMdService renameMdService;
 
+    @Autowired
+    private MdRedisDao mdRedisDao;
+
     private MdIndex mdIndex = new MdIndex();
     private MdAttr mdAttr = new MdAttr();
     private Md md = null;
@@ -62,8 +66,8 @@ public class ClientFacadeTest {
         }
 
         long end = System.currentTimeMillis();
-        System.out.println(String.valueOf(System.currentTimeMillis()));
-        System.out.println(String.format("time: %s", (end - start)));
+        logger.info(String.valueOf(System.currentTimeMillis()));
+        logger.info(String.format("time: %s", (end - start)));
 
         String thirdDir = "foo";
         String thirdFile = "a.t";
@@ -74,9 +78,9 @@ public class ClientFacadeTest {
             }
         }
         long end2 = System.currentTimeMillis();
-        System.out.println(String.valueOf(System.currentTimeMillis()));
-        System.out.println(String.format("time: %s", (end2 - end)));
-        System.out.println(String.format("total time: %s", (end2 - start)));
+        logger.info(String.valueOf(System.currentTimeMillis()));
+        logger.info(String.format("time: %s", (end2 - end)));
+        logger.info(String.format("total time: %s", (end2 - start)));
     }
 
     @Test
@@ -96,8 +100,10 @@ public class ClientFacadeTest {
 
     @Test
     public void testListDirMd() {
-        mdIndex.setPath("/home");
-        mdIndex.setName("a");
+        mdIndex.setPath("/");
+        mdIndex.setName("");
+        printDirList(findMdService.findDirMd(mdIndex));
+        mdIndex.setName("bin0");
         printDirList(findMdService.findDirMd(mdIndex));
     }
 
@@ -129,8 +135,8 @@ public class ClientFacadeTest {
 
     @Test
     public void testFindFileMd() {
-        mdIndex.setPath("/bin");
-        mdIndex.setName("foo.txt");
+        mdIndex.setPath("/bin2");
+        mdIndex.setName("a.t4");
         logger.info(findMdService.findFileMd(mdIndex).toString());
     }
 
@@ -154,9 +160,16 @@ public class ClientFacadeTest {
         int k = 0;
         for (MdAttr mdAttr1 : mdAttrs) {
             if (k++ % 10 == 0) {
-                System.out.println();
+                logger.info("");
             }
-            System.out.print(String.format("[%s,%s]", mdAttr1.getName(), mdAttr1.getSize()));
+            logger.info(String.format("[%s,%s]", mdAttr1.getName(), mdAttr1.getSize()));
         }
+    }
+
+    @Test
+    public void testRedis(){
+        mdRedisDao.setObj("100","first");
+        logger.info(mdRedisDao.getObj("100"));
+        logger.info(mdRedisDao.getObj("foo"));
     }
 }
