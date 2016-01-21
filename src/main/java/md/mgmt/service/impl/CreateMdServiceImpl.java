@@ -33,7 +33,6 @@ public class CreateMdServiceImpl implements CreateMdService {
     @Override
     public CreateMdResp createDirMd(Md md) {
         MdAttrPosDto mdAttrPosDto = createMdDao.createDirMdIndex(md.getMdIndex());
-        logger.info(String.valueOf(mdAttrPosDto));
         if (mdAttrPosDto == null || !mdAttrPosDto.getSuccess()) {
             logger.error("createDirMd error: " + mdAttrPosDto == null ? "null return." : mdAttrPosDto.getMsg());
             return null;

@@ -34,7 +34,6 @@ public class CreateMdIndexHandler extends ChannelInboundHandlerAdapter {
         reqDto.setOpsType(opsType);
         reqDto.setOpsContent(JSON.toJSONString(mdIndex));
         String sendStr = JSON.toJSONString(reqDto);
-        logger.info(sendStr);
         ctx.writeAndFlush(sendStr);
     }
 
