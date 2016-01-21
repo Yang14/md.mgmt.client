@@ -60,7 +60,7 @@ public class ClientFacadeTest {
     public void buildDirTree() {
         long start = System.currentTimeMillis();
         String secondDir = "bin";
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             createMdService.createDirMd(getMd("/", secondDir + i, i, true));
 
         }
@@ -71,8 +71,8 @@ public class ClientFacadeTest {
 
         String thirdDir = "foo";
         String thirdFile = "a.t";
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 5; j++) {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 100; j++) {
                 createMdService.createDirMd(getMd("/" + secondDir + i, thirdDir + j + ":" + i, j, true));
                 createMdService.createFileMd(getMd("/" + secondDir + i, thirdFile + j, j * 5, false));
             }
@@ -115,7 +115,6 @@ public class ClientFacadeTest {
         mdAttr.setType(isDir);
         md.setMdAttr(mdAttr);
         md.setMdIndex(mdIndex);
-        logger.info(md.toString());
         return md;
     }
 
@@ -169,6 +168,7 @@ public class ClientFacadeTest {
     @Test
     public void testRedis(){
         mdRedisDao.setObj("100","first");
+        mdRedisDao.setObj("101","second");
         logger.info(mdRedisDao.getObj("100"));
         logger.info(mdRedisDao.getObj("foo"));
     }
