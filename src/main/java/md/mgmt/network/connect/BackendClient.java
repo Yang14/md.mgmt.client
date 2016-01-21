@@ -20,15 +20,7 @@ import org.slf4j.LoggerFactory;
 public class BackendClient {
     private static final Logger logger = LoggerFactory.getLogger(BackendClient.class);
 
-    private String HOST;
-    private int PORT;
-
-    public BackendClient(String HOST, int PORT) {
-        this.HOST = HOST;
-        this.PORT = PORT;
-    }
-
-    public void connectAndHandle(final ChannelInboundHandlerAdapter handlerAdapter) {
+    public static void connectAndHandle(String HOST, int PORT, final ChannelInboundHandlerAdapter handlerAdapter) {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();

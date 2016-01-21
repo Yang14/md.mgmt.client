@@ -21,14 +21,12 @@ import java.util.List;
  */
 @Component
 public class RenameMdDaoImpl implements RenameMdDao {
-    private static final Logger logger = LoggerFactory.getLogger(FindMdDaoImpl.class);
-
-    private IndexClient indexClient = new IndexClient();
+    private static final Logger logger = LoggerFactory.getLogger(RenameMdDaoImpl.class);
 
     @Override
     public RespDto renameMdIndex(RenamedMd renamedMd) {
         RespDto respDto = new RespDto();
-        indexClient.connectAndHandle(new RenameMdIndexHandler(renamedMd, respDto));
+        IndexClient.connectAndHandle(new RenameMdIndexHandler(renamedMd, respDto));
         return respDto;
     }
 
@@ -38,8 +36,8 @@ public class RenameMdDaoImpl implements RenameMdDao {
         RespDto respDto = new RespDto();
         String fileCode = fileMdAttrPosList.getFileCode();
         for (ClusterNodeInfo nodeInfo : clusterNodeInfos) {
-            BackendClient client = new BackendClient(nodeInfo.getIp(), nodeInfo.getPort());
-            client.connectAndHandle(new RenameMdAttrHandler(new RenameMdAttrDto(fileCode, newFileName), respDto));
+            BackendClient.connectAndHandle(nodeInfo.getIp(), nodeInfo.getPort(),
+                    new RenameMdAttrHandler(new RenameMdAttrDto(fileCode, newFileName), respDto));
             if (respDto.getSuccess()) {
                 break;
             }

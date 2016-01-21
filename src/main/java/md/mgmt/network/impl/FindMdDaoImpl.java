@@ -28,12 +28,11 @@ import java.util.List;
 @Component
 public class FindMdDaoImpl implements FindMdDao {
     private static final Logger logger = LoggerFactory.getLogger(FindMdDaoImpl.class);
-    private IndexClient indexClient = new IndexClient();
 
     @Override
     public RespDto findFileMdIndex(MdIndex mdIndex) {
         RespDto respDto = new RespDto();
-        indexClient.connectAndHandle(new FindMdIndexHandler(mdIndex, respDto, OpsTypeEnum.FIND_FILE.getCode()));
+        IndexClient.connectAndHandle(new FindMdIndexHandler(mdIndex, respDto, OpsTypeEnum.FIND_FILE.getCode()));
         return respDto;
     }
 
@@ -43,8 +42,8 @@ public class FindMdDaoImpl implements FindMdDao {
         RespDto respDto = new RespDto();
         String fileCode = fileMdAttrPosList.getFileCode();
         for (ClusterNodeInfo nodeInfo : clusterNodeInfos) {
-            BackendClient client = new BackendClient(nodeInfo.getIp(), nodeInfo.getPort());
-            client.connectAndHandle(new FindFileMdAttrHandler(fileCode, respDto));
+            BackendClient.connectAndHandle(nodeInfo.getIp(), nodeInfo.getPort(),
+                    new FindFileMdAttrHandler(fileCode, respDto));
             if (respDto.getSuccess()) {
                 break;
             }
@@ -55,7 +54,7 @@ public class FindMdDaoImpl implements FindMdDao {
     @Override
     public RespDto findDirMdIndex(MdIndex mdIndex) {
         RespDto respDto = new RespDto();
-        indexClient.connectAndHandle(new FindMdIndexHandler(mdIndex, respDto, OpsTypeEnum.LIST_DIR.getCode()));
+        IndexClient.connectAndHandle(new FindMdIndexHandler(mdIndex, respDto, OpsTypeEnum.LIST_DIR.getCode()));
         return respDto;
     }
 
@@ -65,8 +64,8 @@ public class FindMdDaoImpl implements FindMdDao {
         RespDto respDto = new RespDto();
         List<MdAttr> mdAttrs = new ArrayList<MdAttr>();
         for (ClusterNodeInfo nodeInfo : clusterNodeInfos) {
-            BackendClient client = new BackendClient(nodeInfo.getIp(), nodeInfo.getPort());
-            client.connectAndHandle(new FindDirMdAttrHandler(nodeInfo.getDistrCode(), respDto));
+            BackendClient.connectAndHandle(nodeInfo.getIp(), nodeInfo.getPort(),
+                    new FindDirMdAttrHandler(nodeInfo.getDistrCode(), respDto));
             if (!respDto.getSuccess()) {
                 logger.error(String.format("Get mdAttr from Node: %s err. resp is:%s", nodeInfo, respDto));
             }

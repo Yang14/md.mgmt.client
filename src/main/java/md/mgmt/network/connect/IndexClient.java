@@ -25,7 +25,7 @@ public class IndexClient {
     private static final String HOST = System.getProperty("host", "192.168.0.13");
     private static final int PORT = Integer.parseInt(System.getProperty("port", "8007"));
 
-    public void connectAndHandle(final ChannelInboundHandlerAdapter handlerAdapter) {
+    public static void connectAndHandle(final ChannelInboundHandlerAdapter handlerAdapter) {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();

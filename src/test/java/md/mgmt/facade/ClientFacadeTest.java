@@ -43,9 +43,6 @@ public class ClientFacadeTest {
     @Autowired
     private RenameMdService renameMdService;
 
-    @Autowired
-    private MdRedisDao mdRedisDao;
-
     private MdIndex mdIndex = new MdIndex();
     private MdAttr mdAttr = new MdAttr();
     private Md md = null;
@@ -101,11 +98,8 @@ public class ClientFacadeTest {
     @Test
     public void testListDirMd() {
         mdIndex.setPath("/");
-<<<<<<< HEAD
-=======
         mdIndex.setName("");
         printDirList(findMdService.findDirMd(mdIndex));
->>>>>>> 079f0652bdf8305fc226e03442017f48f19ac28e
         mdIndex.setName("bin0");
         printDirList(findMdService.findDirMd(mdIndex));
     }
@@ -168,11 +162,4 @@ public class ClientFacadeTest {
         }
     }
 
-    @Test
-    public void testRedis(){
-        mdRedisDao.setObj("100","first");
-        mdRedisDao.setObj("101","second");
-        logger.info(mdRedisDao.getObj("100"));
-        logger.info(mdRedisDao.getObj("foo"));
-    }
 }
