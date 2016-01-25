@@ -23,6 +23,7 @@ public class CreateMdServiceImpl implements CreateMdService {
     @Override
     public CreateMdResp createFileMd(Md md) {
         MdAttrPosDto mdAttrPosDto = createMdDao.createFileMdIndex(md.getMdIndex());
+        logger.info(mdAttrPosDto.toString());
         if (mdAttrPosDto == null || !mdAttrPosDto.getSuccess()) {
             logger.error("createFileMd error: " + mdAttrPosDto == null ? "null return." : mdAttrPosDto.getMsg());
             return null;

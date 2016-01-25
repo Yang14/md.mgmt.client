@@ -6,7 +6,6 @@ import md.mgmt.base.ops.RenamedMd;
 import md.mgmt.facade.req.Md;
 import md.mgmt.facade.resp.FindDirMdResp;
 import md.mgmt.facade.resp.RenameMdResp;
-import md.mgmt.network.MdRedisDao;
 import md.mgmt.service.CreateMdService;
 import md.mgmt.service.FindMdService;
 import md.mgmt.service.RenameMdService;
@@ -21,6 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by Mr-yang on 16-1-9.
@@ -43,6 +43,8 @@ public class ClientFacadeTest {
     @Autowired
     private RenameMdService renameMdService;
 
+    private static CountDownLatch latch = new CountDownLatch(5);
+
     private MdIndex mdIndex = new MdIndex();
     private MdAttr mdAttr = new MdAttr();
     private Md md = null;
@@ -57,7 +59,7 @@ public class ClientFacadeTest {
     public void buildDirTree() {
         long start = System.currentTimeMillis();
         String secondDir = "bin";
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             createMdService.createDirMd(getMd("/", secondDir + i, i, true));
 
         }
@@ -68,8 +70,8 @@ public class ClientFacadeTest {
 
         String thirdDir = "foo";
         String thirdFile = "a.t";
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 100; j++) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 10; j++) {
                 createMdService.createDirMd(getMd("/" + secondDir + i, thirdDir + j + ":" + i, j, true));
                 createMdService.createFileMd(getMd("/" + secondDir + i, thirdFile + j, j * 5, false));
             }
@@ -96,10 +98,30 @@ public class ClientFacadeTest {
     }
 
     @Test
-    public void testListDirMd() {
+    public void testListDirMd() throws InterruptedException {
+
+        for (int i = 0; i < 5; i++) {
+            final int finalI = i;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mdIndex.setPath("/");
+                    mdIndex.setName("bin" + finalI);
+                    printDirList(findMdService.findDirMd(mdIndex));
+                    createMdService.createFileMd(getMd("/bin0", "a-file-redis-sync-set-" + finalI, finalI, false));
+                    mdIndex.setPath("/bin0");
+                    mdIndex.setName("a.t" + finalI);
+                    logger.info(findMdService.findFileMd(mdIndex).toString());
+                    latch.countDown();
+                }
+            }).start();
+        }
+        latch.await();
+    }
+
+    @Test
+    public void testListDirMd2() {
         mdIndex.setPath("/");
-        mdIndex.setName("");
-        printDirList(findMdService.findDirMd(mdIndex));
         mdIndex.setName("bin0");
         printDirList(findMdService.findDirMd(mdIndex));
     }
@@ -137,7 +159,7 @@ public class ClientFacadeTest {
     }
 
     @Test
-    public void testRenameMd() {
+    public void testRenameMd() throws InterruptedException {
         testListDirMd();
         RenamedMd renamedMd = new RenamedMd("/bin0", "a.t0", "a.t0---0");
         RenameMdResp renameMdResp = renameMdService.renameMd(renamedMd);
